@@ -17,6 +17,7 @@ public class DealActivity extends AppCompatActivity {
     EditText txtTitle;
     EditText txtPrice;
     EditText txtDescription;
+    TravelDeal deal;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,6 +29,16 @@ public class DealActivity extends AppCompatActivity {
         txtTitle = findViewById(R.id.txtTitle);
         txtDescription = findViewById(R.id.txtDescription);
         txtPrice = findViewById(R.id.txtPrice);
+
+        Intent intent = getIntent();
+        TravelDeal deal = (TravelDeal) intent.getSerializableExtra("Deal");
+        if (deal==null){
+            deal = new TravelDeal();
+        }
+        this.deal = deal;
+        txtDescription.setText(deal.getDescription());
+        txtPrice.setText(deal.getPrice());
+        txtTitle.setText(deal.getTitle());
     }
 
     @Override
@@ -35,8 +46,14 @@ public class DealActivity extends AppCompatActivity {
         switch (item.getItemId()){
             case R.id.save_menu:
                 saveDeal();
-                Toast.makeText(this,"Deal saved!", Toast.LENGTH_LONG).show();
+                Toast.makeText(this,"Deal saved", Toast.LENGTH_LONG).show();
                 clean();
+                backToList();
+                return true;
+            case R.id.delete_menu:
+                deleteDeal();
+                Toast.makeText(this,"Deal deleted", Toast.LENGTH_LONG).show();
+                backToList();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -51,11 +68,28 @@ public class DealActivity extends AppCompatActivity {
     }
 
     private void saveDeal() {
-        String title = txtTitle.getText().toString();
-        String description = txtDescription.getText().toString();
-        String price = txtPrice.getText().toString();
-        TravelDeal deal = new TravelDeal(title,description,price,"");
-        mDatabaseReference.push().setValue(deal);
+        deal.setTitle(txtTitle.getText().toString());
+        deal.setDescription(txtDescription.getText().toString());
+        deal.setPrice(txtPrice.getText().toString());
+        if (deal.getId()==null){
+            mDatabaseReference.push().setValue(deal);
+        }
+        else {
+            mDatabaseReference.child(deal.getId()).setValue(deal);
+        }
+    }
+
+    private void deleteDeal(){
+        if (deal.getId()==null){
+            Toast.makeText(this, "Please save the deal before attempting to delete", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        mDatabaseReference.child(deal.getId()).removeValue();
+    }
+
+    private void backToList(){
+        Intent intent = new Intent(this, ListActivity.class);
+        startActivity(intent);
     }
 
     @Override
