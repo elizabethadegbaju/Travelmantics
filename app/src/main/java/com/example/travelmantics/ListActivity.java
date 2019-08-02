@@ -1,25 +1,16 @@
 package com.example.travelmantics;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-
-import static com.example.travelmantics.FirebaseUtil.mDatabaseReference;
-import static com.example.travelmantics.FirebaseUtil.mFirebaseDatabase;
-import static com.example.travelmantics.FirebaseUtil.openFbReference;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 
 public class ListActivity extends AppCompatActivity {
-    private ChildEventListener mChildEventListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,7 +21,26 @@ public class ListActivity extends AppCompatActivity {
         final DealAdapter adapter = new DealAdapter();
         rvDeals.setAdapter(adapter);
         LinearLayoutManager dealsLayoutManager =
-                new LinearLayoutManager(this,RecyclerView.VERTICAL,false);
+                new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
         rvDeals.setLayoutManager(dealsLayoutManager);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item){
+        switch(item.getItemId()){
+            case R.id.insert_menu:
+                Intent intent = new Intent(this, DealActivity.class);
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu){
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.list_activity_menu, menu);
+        return true;
     }
 }

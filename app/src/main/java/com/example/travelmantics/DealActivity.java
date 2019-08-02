@@ -2,6 +2,7 @@ package com.example.travelmantics;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -9,12 +10,10 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import static com.example.travelmantics.FirebaseUtil.mDatabaseReference;
+import static com.example.travelmantics.FirebaseUtil.openFbReference;
 
-public class InsertActivity extends AppCompatActivity {
-    private FirebaseDatabase mfirebaseDatabase;
-    private DatabaseReference mdatabaseReference;
+public class DealActivity extends AppCompatActivity {
     EditText txtTitle;
     EditText txtPrice;
     EditText txtDescription;
@@ -24,9 +23,7 @@ public class InsertActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_insert);
 
-
-        mfirebaseDatabase = FirebaseDatabase.getInstance();
-        mdatabaseReference = mfirebaseDatabase.getReference().child("traveldeals");
+        openFbReference("traveldeals");
 
         txtTitle = findViewById(R.id.txtTitle);
         txtDescription = findViewById(R.id.txtDescription);
@@ -58,7 +55,7 @@ public class InsertActivity extends AppCompatActivity {
         String description = txtDescription.getText().toString();
         String price = txtPrice.getText().toString();
         TravelDeal deal = new TravelDeal(title,description,price,"");
-        mdatabaseReference.push().setValue(deal);
+        mDatabaseReference.push().setValue(deal);
     }
 
     @Override
