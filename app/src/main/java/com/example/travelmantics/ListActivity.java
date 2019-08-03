@@ -10,6 +10,10 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 
+import static com.example.travelmantics.FirebaseUtil.attachListener;
+import static com.example.travelmantics.FirebaseUtil.detachListener;
+import static com.example.travelmantics.FirebaseUtil.openFbReference;
+
 public class ListActivity extends AppCompatActivity {
 
     @Override
@@ -17,12 +21,6 @@ public class ListActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list);
 
-        RecyclerView rvDeals = findViewById(R.id.rvDeals);
-        final DealAdapter adapter = new DealAdapter();
-        rvDeals.setAdapter(adapter);
-        LinearLayoutManager dealsLayoutManager =
-                new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
-        rvDeals.setLayoutManager(dealsLayoutManager);
     }
 
     @Override
@@ -35,6 +33,27 @@ public class ListActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        detachListener();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        openFbReference("traveldeals", this);
+        RecyclerView rvDeals = findViewById(R.id.rvDeals);
+        final DealAdapter adapter = new DealAdapter();
+        rvDeals.setAdapter(adapter);
+        LinearLayoutManager dealsLayoutManager =
+                new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
+        rvDeals.setLayoutManager(dealsLayoutManager);
+
+        attachListener();
     }
 
     @Override

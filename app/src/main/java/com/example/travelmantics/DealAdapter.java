@@ -28,7 +28,6 @@ public class DealAdapter extends RecyclerView.Adapter<DealAdapter.DealViewHolder
     ArrayList<TravelDeal> deals;
 
     public DealAdapter(){
-        openFbReference("traveldeals");
         deals = FirebaseUtil.mDeals;
         mChildEventListener = new ChildEventListener() {
             @Override
