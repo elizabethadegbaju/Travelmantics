@@ -16,9 +16,6 @@ import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import static com.example.travelmantics.FirebaseUtil.attachListener;
-import static com.example.travelmantics.FirebaseUtil.detachListener;
-import static com.example.travelmantics.FirebaseUtil.openFbReference;
 
 public class ListActivity extends AppCompatActivity {
 
@@ -42,10 +39,10 @@ public class ListActivity extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<Void>() {
                             public void onComplete(@NonNull Task<Void> task) {
                                 Log.d("Logout", "onComplete: User logged out");
-                                attachListener();
+                                FirebaseUtil.attachListener();
                             }
                         });
-                detachListener();
+                FirebaseUtil.detachListener();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -55,14 +52,14 @@ public class ListActivity extends AppCompatActivity {
     @Override
     protected void onPause() {
         super.onPause();
-        detachListener();
+        FirebaseUtil.detachListener();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
-        openFbReference("traveldeals", this);
+        FirebaseUtil.openFbReference("traveldeals", this);
         RecyclerView rvDeals = findViewById(R.id.rvDeals);
         final DealAdapter adapter = new DealAdapter();
         rvDeals.setAdapter(adapter);
@@ -70,13 +67,25 @@ public class ListActivity extends AppCompatActivity {
                 new LinearLayoutManager(this, RecyclerView.VERTICAL,false);
         rvDeals.setLayoutManager(dealsLayoutManager);
 
-        attachListener();
+        FirebaseUtil.attachListener();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu){
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.list_activity_menu, menu);
+        MenuItem insertMenu = menu.findItem(R.id.insert_menu);
+        if (FirebaseUtil.isAdmin){
+            insertMenu.setVisible(true);
+        }
+        else{
+            insertMenu.setVisible(false);
+        }
+
         return true;
+    }
+
+    public void showMenu(){
+        invalidateOptionsMenu();
     }
 }
