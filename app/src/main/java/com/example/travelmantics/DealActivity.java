@@ -58,7 +58,6 @@ public class DealActivity extends AppCompatActivity {
         if (deal==null){
             deal = new TravelDeal();
         }
-//        this.deal = deal;
         txtDescription.setText(deal.getDescription());
         txtPrice.setText(deal.getPrice());
         txtTitle.setText(deal.getTitle());
@@ -137,7 +136,7 @@ public class DealActivity extends AppCompatActivity {
             picReference.delete().addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    Log.d("Delete Image", "onSuccess: Image succesfully deleted");
+                    Log.d("Delete Image", "onSuccess: Image successfully deleted");
                 }
             }).addOnFailureListener(new OnFailureListener() {
                 @Override
@@ -163,34 +162,23 @@ public class DealActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode==PICTURE_RESULT && resultCode==RESULT_OK){
-            assert data != null;
             final Uri imageUri = data.getData();
-            final StorageReference
-                    reference = FirebaseUtil.mStorageReference.child(imageUri.getLastPathSegment());
-            UploadTask uploadTask = reference.putFile(imageUri);
-            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+            final StorageReference ref = FirebaseUtil.mStorageReference.child(imageUri.getLastPathSegment());
+            ref.putFile(imageUri).addOnSuccessListener(this, new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
-                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                    if (!task.isSuccessful()) {
-                        throw task.getException();
-                    }
-                    return reference.getDownloadUrl();
-                }
-            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                @Override
-                public void onComplete(@NonNull Task<Uri> task) {
-                    if (task.isSuccessful()) {
-                        Uri downloadUri = task.getResult();
-                        assert downloadUri != null;
-                        String imageUrl = downloadUri.toString();
-                        String imageName = task.getResult().getLastPathSegment();
-                        Log.d("imageUrl", "onSuccess: "+downloadUri.toString());
-                        deal.setImageUrl(imageUrl);
-                        deal.setImageName(imageName);
-                        showImage(imageUrl);
-                    } else {
-                        Toast.makeText(DealActivity.this, "Picture couldn't be uploaded", Toast.LENGTH_LONG).show();
-                    }
+                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    ref.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                        @Override
+                        public void onSuccess(Uri uri) {
+                            String url =uri.toString();
+                            Log.d("Url", "onSuccess: uri= "+ url);
+                            deal.setImageUrl(url);
+                            showImage(url);
+                        }
+                    });
+                    String pictureName = taskSnapshot.getStorage().getPath();
+                    deal.setImageName(pictureName);
+                    Log.d("Name", pictureName);
                 }
             });
         }
@@ -198,7 +186,7 @@ public class DealActivity extends AppCompatActivity {
 
     public void editImage(View view) {
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-        intent.setType("image/jpeg");
+        intent.setType("image/*");
         intent.putExtra(Intent.EXTRA_LOCAL_ONLY,true);
         startActivityForResult(Intent.createChooser(intent, "Insert Picture"), PICTURE_RESULT);
     }
