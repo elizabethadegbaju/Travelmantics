@@ -183,7 +183,7 @@ public class DealActivity extends AppCompatActivity {
                         Uri downloadUri = task.getResult();
                         assert downloadUri != null;
                         String imageUrl = downloadUri.toString();
-                        String imageName = task.getResult().getPath();
+                        String imageName = task.getResult().getLastPathSegment();
                         Log.d("imageUrl", "onSuccess: "+downloadUri.toString());
                         deal.setImageUrl(imageUrl);
                         deal.setImageName(imageName);
